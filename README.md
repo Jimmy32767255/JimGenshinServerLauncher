@@ -16,7 +16,7 @@ JimGenshinServerLauncher
 
 6.可配置的游戏客户端路径
 
-7.自动检测端口占用并解决
+7.自动检测端口占用并解决(默认检测以下端口：27017,22101,443)
 
 关于如何配置它：
 
@@ -45,5 +45,9 @@ JimGenshinServerLauncher
 3.生成配置文件
 
 *若您要请求一个新功能，请提交issued
+
+资源使用与鸣谢：
+
+本启动器中的字符画由https://symbol.bqrdh.com/ascii-art/generator 生成
 
 最后，编程语言没有高低贵贱之分，请不要说“脚本小子写个破批处理也敢发github”这种话，谢谢。
