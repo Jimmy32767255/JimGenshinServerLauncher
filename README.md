@@ -2,7 +2,7 @@ JimGenshinServerLauncher
 
 这是一个简单的bat批处理程序，其目的为快速简单的启动Grasscutter服务端及其依赖服务，并能在客户端关闭后自动关闭服务端。
 
-现支持以下功能:
+现支持以下功能：
 
 1.自动启动数据库
 
@@ -28,7 +28,7 @@ JimGenshinServerLauncher
 
 4.从https://github.com/Grasscutters/Grasscutter 下载割草机项目并将其放置在“割草机”文件夹中
 
-5.目录应与游戏客户端目录(Genshin Impact game)在同一目录下
+5.目录应与游戏客户端目录(Genshin Impact game)在同一目录下，否则请在程序中手动指定
 
 运行要求：
 
