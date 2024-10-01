@@ -18,7 +18,25 @@ JimGenshinServerLauncher
 
 7.自动检测端口占用并解决
 
-项目未来[[[可能]]]会添加的功能:
+关于如何配置它：
+
+1.下载一个满足要求的Java，将其放置在“运行环境”文件夹中
+
+2.从https://github.com/jie65535/GrasscutterCommandGenerator下载指令和代理工具，将其重命名为“指令和代理工具.exe”并放置在“指令和代理工具”文件夹中
+
+3.从https://www.mongodb.com/下载数据库并将其放置在“数据库”文件夹中
+
+4.从https://github.com/Grasscutters/Grasscutter下载割草机项目并将其放置在“割草机”文件夹中
+
+5.目录应与游戏客户端目录(Genshin Impact game)在同一目录下
+
+运行要求：
+
+1.正常的Microsoft Windows环境
+
+2.以当前用户身份运行，不要以管理员身份运行
+
+项目未来可能会添加的功能:
 
 1.更多语言的版本(*若您要帮助翻译，请提交issued)
 
