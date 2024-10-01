@@ -1,4 +1,5 @@
 JimGenshinServerLauncher
+
 这是一个简单的bat批处理程序，其目的为快速简单的启动Grasscutter服务端及其依赖服务，并能在客户端关闭后自动关闭服务端。
 
 现支持以下功能:
