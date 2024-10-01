@@ -22,11 +22,11 @@ JimGenshinServerLauncher
 
 1.下载一个满足要求的Java，将其放置在“运行环境”文件夹中
 
-2.从https://github.com/jie65535/GrasscutterCommandGenerator下载指令和代理工具，将其重命名为“指令和代理工具.exe”并放置在“指令和代理工具”文件夹中
+2.从https://github.com/jie65535/GrasscutterCommandGenerator 下载指令和代理工具，将其重命名为“指令和代理工具.exe”并放置在“指令和代理工具”文件夹中
 
-3.从https://www.mongodb.com/下载数据库并将其放置在“数据库”文件夹中
+3.从https://www.mongodb.com/ 下载数据库并将其放置在“数据库”文件夹中
 
-4.从https://github.com/Grasscutters/Grasscutter下载割草机项目并将其放置在“割草机”文件夹中
+4.从https://github.com/Grasscutters/Grasscutter 下载割草机项目并将其放置在“割草机”文件夹中
 
 5.目录应与游戏客户端目录(Genshin Impact game)在同一目录下
 
