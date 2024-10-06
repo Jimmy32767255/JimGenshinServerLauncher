@@ -20,23 +20,23 @@
 
 ## 关于如何配置它：
 
- - 1.从[项目releases](https://github.com/Jimmy32767255/JimGenshinServerLauncher/releases)下载最新的”JimGenshinServerLauncher.zip“并解压缩
+ - 1.从[本项目Releases](https://github.com/Jimmy32767255/JimGenshinServerLauncher/releases)下载最新的”JimGenshinServerLauncher.zip“并解压缩
 
  - \\_1.1.目录应与游戏客户端目录(Genshin Impact game)在同一目录下，否则请在程序中手动指定
 
  - 2.下载一个满足割草机要求的Java，将其放置在“运行环境”文件夹中
 
- - \\_2.1.推荐使用[azul优化版java17](https://www.azul.com/downloads/?version=java-17-lts&package=jdk#zulu)
+ - \\_2.1.推荐使用[Azul优化版java17](https://www.azul.com/downloads/?version=java-17-lts&package=jdk#zulu)
 
- - \\__2.2.或者，使用割草机官方推荐的[oracle原版java17](https://www.oracle.com/java/technologies/javase/jdk17-archive-downloads.html)
+ - \\__2.2.或者，使用割草机官方推荐的[Oracle原版java17](https://www.oracle.com/java/technologies/javase/jdk17-archive-downloads.html)
 
- - 3.从[割草机指令生成器项目仓库](https://github.com/jie65535/GrasscutterCommandGenerator)下载指令和代理工具，将其重命名为“指令和代理工具.exe”并放置在“指令和代理工具”文件夹中
+ - 3.从[割草机指令生成器项目仓库的Releases](https://github.com/jie65535/GrasscutterCommandGenerator/releases)下载指令和代理工具，将其重命名为“指令和代理工具.exe”并放置在“指令和代理工具”文件夹中
 
- - 4.从[mongodb官方网站](https://www.mongodb.com/)下载数据库并将其放置在“数据库”文件夹中
+ - 4.从[MongoDB官方网站](https://www.mongodb.com/try/download/community)下载MongoDB社区版并将其放置在“数据库”文件夹中
 
  - 5.从[割草机仓库](https://github.com/Grasscutters/Grasscutter)下载割草机项目并将其放置在“割草机”文件夹中
 
- - \\_5.1.这里指的是构建完成后的完整项目，请遵照割草机仓库的[自述文件](https://github.com/Grasscutters/Grasscutter/blob/development/docs/README_zh-CN.md)自行构建
+ - \\_5.1.这里指的是构建完成后的完整项目，请遵照[割草机仓库的自述文件](https://github.com/Grasscutters/Grasscutter/blob/development/docs/README_zh-CN.md)自行构建
 
 ## 运行要求：
 
