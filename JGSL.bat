@@ -1,90 +1,177 @@
 :restart
-@echo off
-setlocal enabledelayedexpansion
-cls
-color 27
-title ¼ì²âÖĞ
-echo ÕıÔÚ¼ì²âÔËĞĞ»·¾³£¬ÇëÉÔºó...
-echo ÕıÔÚ¼ì²âÓÎÏ·Ö÷³ÌĞò...
+@echo off & setlocal enabledelayedexpansion
+cls & color 27 & chcp 65001 >nul
+
+set JGSL=%cd%\JGSL
+set config=%JGSL%\.config
+set lang_folder=%JGSL%\lang
+set Api.Github=https://api.github.com/repos/Qianyiaz/JimGenshinServerLauncher/releases/latest
+set tempfile=%JGSL%\github.json
+
+Title %ys-44%
+curl -s -o "%tempfile%" %Api.Github%
+if %errorlevel% neq 0 (
+    goto lang
+)
+
+for /f "tokens=2 delims=:, " %%B in ('type "%tempfile%" ^| findstr /i "tag_name"') do (
+    set l=%%B
+    set l=!l:"=!
+)
+
+for /f "tokens=2* delims=: " %%C in ('findstr /i "browser_download_url" "%tempfile%"') do (
+set "download_url=%%D"
+set "download_url=!download_url:"=!"
+)
+
+del %tempfile%
+
+for /f "tokens=1,2,3 delims=." %%a in ("%Version%") do (
+    set /a C_M=%%a
+    set /a C_M=%%b
+    set /a C_P=%%c
+)
+
+for /f "tokens=1,2,3 delims=." %%a in ("%l%") do (
+    set /a L_M=%%a
+    set /a L_M=%%b
+    set /a L_P=%%c
+)
+
+if !L_M! gtr !C_M! (
+    goto Download
+) else if !L_M! equ !C_M! (
+    if !L_M! gtr !C_M! (
+        goto Download
+    ) else if !L_M! equ !C_M! (
+        if !L_P! gtr !C_P! (
+            goto Download
+        )
+    )
+)
+:lang
+set "content="
+for /f "usebackq delims=" %%A in ("%config%") do ( set "content=!content!%%A")
+echo !content! | find /i "lang" > nul
+if errorlevel 1 (
+    :cl
+    cls
+    (
+    mkdir "%JGSL%"
+    mkdir "%lang_folder%"
+    move "zh_cn.lang" "%lang_folder%"
+    move "en_us.lang" "%lang_folder%"
+    ) >>nul 2>&1
+    type nul > %config%
+    (
+    echo Version=%v%
+    echo Count=0
+    ) >> %config%
+    echo.
+    echo            Please choose your language:
+    echo                     [1] Chinese-s           
+    echo                     [2] English
+    echo.
+    set /p langn="Enter your choice: "
+    
+    if "%langn%"=="1" (
+        set "selected_lang=zh_cn"
+        echo Lang=zh_cn>> "%config%"
+    ) else if "%langn%"=="2" (
+        set "selected_lang=en_us"
+        echo Lang=en_us>> "%config%"
+    ) else (
+        echo Invalid choice. Please try again. 
+        timeout /t 2 > nul
+        goto cl
+    )
+)
+
+for /f "tokens=1,* delims==" %%a in (%config%) do ( set "%%a=%%b")
+for /f "tokens=1,* delims==" %%a in (%lang_folder%\%Lang%.lang) do ( set "%%a=%%b")
+
+title %ys-1%
+echo %ys-2%
+echo %ys-3%
 if not exist "..\genshin impact game\genshinimpact.exe" (
-    if not exist .\Ô­ÉñÂ·¾¶ÅäÖÃÎÄ¼ş_ÇëÎğĞŞ¸Ä»òÉ¾³ı.txt (
+    if not exist .\åŸç¥è·¯å¾„é…ç½®æ–‡ä»¶_è¯·å‹¿ä¿®æ”¹æˆ–åˆ é™¤.txt (
         goto :errorgameunfind
     )
 )
-if exist .\Ô­ÉñÂ·¾¶ÅäÖÃÎÄ¼ş_ÇëÎğĞŞ¸Ä»òÉ¾³ı.txt (
-    set /p game=<.\Ô­ÉñÂ·¾¶ÅäÖÃÎÄ¼ş_ÇëÎğĞŞ¸Ä»òÉ¾³ı.txt
+if exist .\åŸç¥è·¯å¾„é…ç½®æ–‡ä»¶_è¯·å‹¿ä¿®æ”¹æˆ–åˆ é™¤.txt (
+    set /p game=<.\åŸç¥è·¯å¾„é…ç½®æ–‡ä»¶_è¯·å‹¿ä¿®æ”¹æˆ–åˆ é™¤.txt
     goto :cfg
 )
 set game=..\"genshin impact game"\genshinimpact.exe
+
 :cfg
-echo Í¨¹ı¡£
-echo ÏµÍ³»·¾³£º
+echo %ys-4%
+echo %ys-5%
 ver
-echo JGSLÔËĞĞÂ·¾¶£º%~dp0
-echo ÏÔÊ¾²âÊÔ£º
-echo ¨x¨y¨z¨{¨|¨}¨~¨€¨¨‚¨ƒ¨„¨…¨†¨‡??¨ˆ
+echo %ys-6%~dp0
+echo %ys-7%
+echo â–â–‚â–ƒâ–„â–…â–†â–‡â–ˆâ–‰â–Šâ–‹â–Œâ–â–â–??â–“
 echo ??
 echo ABCDEFGHIJKLMNOPQRSTUVWXYZ
 echo ,./;:'"\|[{]}-_=+`~/*!@#$%^&*()
 timeout 3 > nul
 cls
-title µÈ´ıÆô¶¯ÖĞ
+title %ys-8%
 echo ------------------------------
-echo                                                                                   ¨€¨€                
-echo                                                                                   ¨€¨€                
-echo                                                                                   ¨€¨€                
-echo                                                                                   ¨€¨€                
-echo                                                                                   ¨€¨€¨€               
-echo                                                                                  ¨€¨€¨€¨€               
-echo                                                                                  ¨€¨€¨€¨€               
-echo            ¨€                                             ¨€                       ¨€¨€¨€¨€¨€              
-echo           ¨€¨€                                             ¨€¨€                     ¨€¨€¨€¨€¨€¨€              
-echo          ¨€¨€¨€¨€                                           ¨€¨€¨€                    ¨€¨€¨€¨€¨€¨€¨€¨€             
-echo        ¨€¨€¨€¨€¨€¨€¨€¨€                                       ¨€¨€¨€¨€¨€¨€¨€¨€               ¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€           
-echo     ¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€         ¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€        
-echo        ¨€¨€¨€¨€¨€¨€¨€¨€¨€             ¨€¨€¨€¨€                     ¨€¨€¨€¨€¨€¨€¨€                  ¨€¨€¨€¨€¨€¨€¨€¨€             
-echo         ¨€¨€¨€¨€¨€¨€¨€            ¨€¨€¨€¨€¨€¨€¨€                      ¨€¨€¨€   ¨€¨€                 ¨€¨€¨€¨€               
-echo         ¨€¨€¨€¨€¨€¨€¨€  ¨€¨€¨€¨€¨€¨€¨€     ¨€¨€¨€¨€     ¨€¨€¨€¨€¨€¨€¨€            ¨€¨€¨€¨€¨€¨€¨€¨€¨€  ¨€¨€¨€¨€¨€¨€¨€      ¨€¨€¨€      ¨€¨€¨€¨€¨€¨€¨€¨€  
-echo         ¨€¨€¨€¨€¨€¨€¨€  ¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€  ¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€ ¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€
-echo         ¨€¨€¨€¨€¨€¨€¨€  ¨€¨€¨€¨€¨€¨€¨€              ¨€¨€¨€¨€¨€¨€¨€   ¨€¨€¨€¨€¨€¨€ ¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€     ¨€¨€¨€¨€     ¨€¨€¨€¨€¨€¨€¨€¨€  
-echo         ¨€¨€¨€¨€¨€¨€¨€  ¨€¨€¨€¨€¨€¨€¨€              ¨€¨€¨€¨€¨€¨€¨€   ¨€¨€¨€¨€¨€¨€ ¨€¨€¨€¨€¨€¨€       ¨€¨€¨€¨€¨€¨€¨€¨€    ¨€¨€¨€¨€¨€¨€¨€   ¨€¨€¨€¨€¨€¨€¨€¨€  
-echo         ¨€¨€¨€¨€¨€¨€¨€  ¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€ ¨€¨€¨€¨€¨€¨€¨€   ¨€¨€¨€¨€¨€¨€ ¨€¨€¨€¨€¨€¨€ ¨€¨€¨€¨€  ¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€  
-echo         ¨€¨€¨€¨€¨€¨€¨€  ¨€¨€¨€¨€¨€¨€¨€              ¨€¨€¨€¨€¨€¨€¨€   ¨€¨€¨€¨€¨€¨€ ¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€ ¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€  
-echo         ¨€¨€¨€¨€¨€¨€¨€  ¨€¨€¨€¨€¨€¨€¨€              ¨€¨€¨€¨€¨€¨€¨€   ¨€¨€¨€¨€¨€¨€ ¨€¨€¨€¨€¨€¨€ ¨€¨€¨€¨€¨€ ¨€¨€¨€¨€¨€¨€¨€¨€   ¨€¨€¨€¨€¨€¨€¨€¨€   ¨€¨€¨€¨€¨€¨€¨€¨€  
-echo        ¨€¨€¨€¨€¨€¨€¨€¨€  ¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€   ¨€¨€¨€¨€¨€¨€ ¨€¨€¨€¨€¨€¨€ ¨€¨€¨€¨€¨€ ¨€¨€¨€¨€¨€¨€¨€¨€     ¨€¨€¨€¨€¨€    ¨€¨€¨€¨€¨€¨€¨€¨€  
-echo        ¨€¨€¨€¨€¨€¨€¨€   ¨€¨€¨€¨€¨€¨€     ¨€¨€¨€¨€¨€¨€¨€   ¨€¨€¨€¨€¨€¨€¨€   ¨€¨€¨€¨€¨€¨€ ¨€¨€¨€¨€¨€¨€ ¨€¨€¨€¨€¨€ ¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€  
-echo        ¨€¨€¨€¨€¨€¨€¨€   ¨€¨€         ¨€¨€¨€¨€¨€¨€¨€             ¨€¨€¨€¨€¨€¨€ ¨€¨€¨€¨€¨€¨€ ¨€¨€¨€¨€  ¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€  
-echo        ¨€¨€¨€¨€¨€¨€      ¨€¨€¨€¨€¨€    ¨€¨€¨€¨€¨€¨€¨€   ¨€¨€¨€¨€¨€¨€    ¨€¨€¨€¨€¨€  ¨€¨€¨€¨€¨€¨€ ¨€¨€¨€   ¨€¨€¨€¨€¨€¨€¨€      ¨€¨€¨€¨€      ¨€¨€¨€¨€¨€¨€¨€  
-echo       ¨€¨€¨€¨€¨€¨€  ¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€ ¨€¨€¨€¨€¨€¨€¨€ ¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€  ¨€¨€¨€¨€¨€¨€       ¨€¨€¨€¨€        ¨€¨€¨€¨€¨€¨€        ¨€¨€¨€¨€  
-echo      ¨€¨€¨€¨€¨€  ¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€  ¨€¨€¨€¨€¨€¨€  ¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€   ¨€¨€¨€¨€¨€¨€                ¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€           
-echo     ¨€¨€¨€¨€¨€   ¨€¨€¨€¨€¨€¨€          ¨€¨€¨€¨€¨€¨€¨€         ¨€¨€¨€¨€¨€¨€¨€    ¨€¨€¨€¨€¨€¨€              ¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€         
-echo    ¨€¨€¨€        ¨€¨€¨€¨€          ¨€¨€¨€¨€¨€¨€          ¨€¨€¨€¨€       ¨€¨€¨€¨€¨€¨€                 ¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€            
-echo  ¨€                  ¨€¨€¨€¨€    ¨€¨€¨€¨€¨€¨€     ¨€¨€¨€             ¨€¨€¨€¨€¨€                   ¨€¨€¨€¨€¨€¨€¨€¨€             
-echo                             ¨€¨€¨€¨€                       ¨€¨€¨€¨€                     ¨€¨€¨€¨€¨€¨€              
-echo                             ¨€¨€                         ¨€¨€                       ¨€¨€¨€¨€¨€¨€              
-echo                                                                                  ¨€¨€¨€¨€               
-echo                                                                                  ¨€¨€¨€¨€               
-echo                                                                                  ¨€¨€¨€¨€               
-echo                                                                                   ¨€¨€¨€               
-echo                                                                                   ¨€¨€                
-echo                                                                                   ¨€¨€                
-echo                                                                                   ¨€¨€                
-echo                                                                                   ¨€¨€                
-echo                                                                                   ¨€¨€                
-echo                                                                                   ¨€¨€                
-echo ÄãºÃ£¬ÂÃĞĞÕß¡£
-echo µ±Ç°ÈÕÆÚ£º%date%
-echo µ±Ç°Ê±¼ä£º%time%
-echo ¡¸»¶Ó­À´µ½ÊÀ½ç¡£¡¹
-echo ±¾Ò»¼üÆô¶¯¹¤¾ßÓÉÕÅÖÇ½ÜÖÆ×÷
-echo ¸î²İ»úÏîÄ¿µØÖ·£ºhttps://github.com/grasscutters/grasscutter
-echo ¸î²İ»úÊÇ¿ªÔ´Ãâ·ÑÈí¼ş£¬ÑÏ½ûµ¹Âò£¡
-echo Çë°´ÈÎÒâ¼üÆô¶¯·şÎñ¶Ë£¡
-echo ------------------------------
+echo                                                                                   â–ˆâ–ˆ                
+echo                                                                                   â–ˆâ–ˆ                
+echo                                                                                   â–ˆâ–ˆ                
+echo                                                                                   â–ˆâ–ˆ                
+echo                                                                                   â–ˆâ–ˆâ–ˆ               
+echo                                                                                  â–ˆâ–ˆâ–ˆâ–ˆ               
+echo                                                                                  â–ˆâ–ˆâ–ˆâ–ˆ               
+echo            â–ˆ                                             â–ˆ                       â–ˆâ–ˆâ–ˆâ–ˆâ–ˆ              
+echo           â–ˆâ–ˆ                                             â–ˆâ–ˆ                     â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆ              
+echo          â–ˆâ–ˆâ–ˆâ–ˆ                                           â–ˆâ–ˆâ–ˆ                    â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆ             
+echo        â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆ                                       â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆ               â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆ           
+echo     â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆ         â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆ        
+echo        â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆ             â–ˆâ–ˆâ–ˆâ–ˆ                     â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆ                  â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆ             
+echo         â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆ            â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆ                      â–ˆâ–ˆâ–ˆ   â–ˆâ–ˆ                 â–ˆâ–ˆâ–ˆâ–ˆ               
+echo         â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆ  â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆ     â–ˆâ–ˆâ–ˆâ–ˆ     â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆ            â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆ  â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆ      â–ˆâ–ˆâ–ˆ      â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆ  
+echo         â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆ  â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆ  â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆ â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆ
+echo         â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆ  â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆ              â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆ   â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆ â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆ     â–ˆâ–ˆâ–ˆâ–ˆ     â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆ  
+echo         â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆ  â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆ              â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆ   â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆ â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆ       â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆ    â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆ   â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆ  
+echo         â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆ  â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆ â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆ   â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆ â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆ â–ˆâ–ˆâ–ˆâ–ˆ  â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆ  
+echo         â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆ  â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆ              â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆ   â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆ â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆ â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆ  
+echo         â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆ  â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆ              â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆ   â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆ â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆ â–ˆâ–ˆâ–ˆâ–ˆâ–ˆ â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆ   â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆ   â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆ  
+echo        â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆ  â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆ   â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆ â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆ â–ˆâ–ˆâ–ˆâ–ˆâ–ˆ â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆ     â–ˆâ–ˆâ–ˆâ–ˆâ–ˆ    â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆ  
+echo        â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆ   â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆ     â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆ   â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆ   â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆ â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆ â–ˆâ–ˆâ–ˆâ–ˆâ–ˆ â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆ  
+echo        â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆ   â–ˆâ–ˆ         â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆ             â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆ â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆ â–ˆâ–ˆâ–ˆâ–ˆ  â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆ  
+echo        â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆ      â–ˆâ–ˆâ–ˆâ–ˆâ–ˆ    â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆ   â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆ    â–ˆâ–ˆâ–ˆâ–ˆâ–ˆ  â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆ â–ˆâ–ˆâ–ˆ   â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆ      â–ˆâ–ˆâ–ˆâ–ˆ      â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆ  
+echo       â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆ  â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆ â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆ â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆ  â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆ       â–ˆâ–ˆâ–ˆâ–ˆ        â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆ        â–ˆâ–ˆâ–ˆâ–ˆ  
+echo      â–ˆâ–ˆâ–ˆâ–ˆâ–ˆ  â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆ  â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆ  â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆ   â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆ                â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆ           
+echo     â–ˆâ–ˆâ–ˆâ–ˆâ–ˆ   â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆ          â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆ         â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆ    â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆ              â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆ         
+echo    â–ˆâ–ˆâ–ˆ        â–ˆâ–ˆâ–ˆâ–ˆ          â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆ          â–ˆâ–ˆâ–ˆâ–ˆ       â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆ                 â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆ            
+echo  â–ˆ                  â–ˆâ–ˆâ–ˆâ–ˆ    â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆ     â–ˆâ–ˆâ–ˆ             â–ˆâ–ˆâ–ˆâ–ˆâ–ˆ                   â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆ             
+echo                             â–ˆâ–ˆâ–ˆâ–ˆ                       â–ˆâ–ˆâ–ˆâ–ˆ                     â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆ              
+echo                             â–ˆâ–ˆ                         â–ˆâ–ˆ                       â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆ              
+echo                                                                                  â–ˆâ–ˆâ–ˆâ–ˆ               
+echo                                                                                  â–ˆâ–ˆâ–ˆâ–ˆ               
+echo                                                                                  â–ˆâ–ˆâ–ˆâ–ˆ               
+echo                                                                                   â–ˆâ–ˆâ–ˆ               
+echo                                                                                   â–ˆâ–ˆ                
+echo                                                                                   â–ˆâ–ˆ                
+echo                                                                                   â–ˆâ–ˆ                
+echo                                                                                   â–ˆâ–ˆ                
+echo                                                                                   â–ˆâ–ˆ                
+echo                                                                                   â–ˆâ–ˆ                
+echo %ys-9%
+echo %ys-10%%date%
+echo %ys-11%%time%
+echo %ys-12%
+echo %ys-13%
+echo %ys-14%
+echo %ys-15%
+echo %ys-16%
 pause > nul
 cls
-title Æô¶¯ÖĞ
-echo ÕıÔÚ¼ì²éÊı¾İ¿â¶Ë¿ÚÕ¼ÓÃ²¢³¢ÊÔ½â¾ö...
+title %ys-17%
+echo %ys-18%
 for /f "tokens=2,4,5" %%a in ('netstat -ano^|find /i ":27017 "') do (
     if not "%%c"=="" (
         set pid=%%c
@@ -93,26 +180,26 @@ for /f "tokens=2,4,5" %%a in ('netstat -ano^|find /i ":27017 "') do (
     )
 )
 for /f "tokens=1" %%a in ('tasklist /fi "pid eq %pid%"') do set prog=%%a
-echo Õ¼ÓÃµÄ¶Ë¿ÚºÅ£º%port%
-echo ½ø³Ìpid£º%pid%
-echo ½ø³ÌÃû³Æ£º%prog%
-echo ÕıÔÚ×Ô¶¯ÖĞÖ¹½ø³Ì...
+echo %ys-19%%port%
+echo %ys-20%%pid%
+echo %ys-21%%prog%
+echo %ys-22%
 taskkill /f /fi "pid eq %pid%"
-echo ÒÑ¼ì²âÊı¾İ¿â¶Ë¿ÚÕ¼ÓÃ²¢³¢ÊÔ½â¾ö¡£
-echo ------------------------------
-cd Êı¾İ¿â
-echo ÕıÔÚÆô¶¯Êı¾İ¿â...
+echo %ys-23%
+echo %ys-16%
+cd æ•°æ®åº“
+echo %ys-24%
 start /min mongod.exe --dbpath data --port 27017
-echo ÒÑ³¢ÊÔÆô¶¯Êı¾İ¿â¡£
+echo %ys-25%
 cd ..
-cd Ö¸ÁîºÍ´úÀí¹¤¾ß
-echo ------------------------------
-echo ÕıÔÚÆô¶¯Ö¸ÁîºÍ´úÀí¹¤¾ß...
-start Ö¸ÁîºÍ´úÀí¹¤¾ß.exe
-echo ÒÑ³¢ÊÔÆô¶¯Ö¸ÁîºÍ´úÀí¹¤¾ß¡£
+cd %ys-26%
+echo %ys-16%
+echo %ys-27%
+start æŒ‡ä»¤å’Œä»£ç†å·¥å…·.exe
+echo %ys-28%
 cd ..
-echo ------------------------------
-echo ÕıÔÚ¼ì²é·şÎñ¶Ëtcp¶Ë¿ÚÕ¼ÓÃ²¢³¢ÊÔ½â¾ö...
+echo %ys-16%
+echo %ys-29%
 for /f "tokens=2,4,5" %%a in ('netstat -ano^|find /i ":443 "') do (
     if not "%%c"=="" (
         set pid=%%c
@@ -121,14 +208,14 @@ for /f "tokens=2,4,5" %%a in ('netstat -ano^|find /i ":443 "') do (
     )
 )
 for /f "tokens=1" %%a in ('tasklist /fi "pid eq %pid%"') do set prog=%%a
-echo Õ¼ÓÃµÄ¶Ë¿ÚºÅ£º%port%
-echo ½ø³Ìpid£º%pid%
-echo ½ø³ÌÃû³Æ£º%prog%
-echo ÕıÔÚ×Ô¶¯ÖĞÖ¹½ø³Ì...
+echo %ys-19%%port%
+echo %ys-20%%pid%
+echo %ys-21%%prog%
+echo %ys-22%
 taskkill /f /fi "pid eq %pid%"
-echo ÒÑ¼ì²â·şÎñ¶Ëtcp¶Ë¿ÚÕ¼ÓÃ²¢³¢ÊÔ½â¾ö¡£
-echo ------------------------------
-echo ÕıÔÚ¼ì²é·şÎñ¶Ëudp¶Ë¿ÚÕ¼ÓÃ²¢³¢ÊÔ½â¾ö...
+echo %ys-29%
+echo %ys-16%
+echo %ys-30%
 for /f "tokens=2,4,5" %%a in ('netstat -ano^|find /i ":22101 "') do (
     if not "%%c"=="" (
         set pid=%%c
@@ -137,73 +224,87 @@ for /f "tokens=2,4,5" %%a in ('netstat -ano^|find /i ":22101 "') do (
     )
 )
 for /f "tokens=1" %%a in ('tasklist /fi "pid eq %pid%"') do set prog=%%a
-echo Õ¼ÓÃµÄ¶Ë¿ÚºÅ£º%port%
-echo ½ø³Ìpid£º%pid%
-echo ½ø³ÌÃû³Æ£º%prog%
-echo ÕıÔÚ×Ô¶¯ÖĞÖ¹½ø³Ì...
+echo %ys-19%%port%
+echo %ys-20%%pid%
+echo %ys-21%%prog%
+echo %ys-22%
 taskkill /f /fi "pid eq %pid%"
-echo ÒÑ¼ì²â·şÎñ¶Ëudp¶Ë¿ÚÕ¼ÓÃ²¢³¢ÊÔ½â¾ö¡£
-echo ------------------------------
-cd ¸î²İ»ú
-echo ÕıÔÚÆô¶¯¸î²İ»ú·şÎñ¶Ë...
+echo %ys-30%
+echo %ys-16%
+cd å‰²è‰æœº
+echo %ys-31%
 timeout 3 >nul
-start /high ..\ÔËĞĞ»·¾³\bin\java.exe -jar ¸î²İ»úºËĞÄ.jar
-echo ÒÑ³¢ÊÔÆô¶¯·şÎñ¶Ë¡£
-echo ------------------------------
+start /high ..\è¿è¡Œç¯å¢ƒ\bin\java.exe -jar å‰²è‰æœºæ ¸å¿ƒ.jar
+echo %ys-32%
+echo %ys-16%
 cd ..
 color 17
-title ÓÎÍæÖĞ
-echo ÒÑ³¢ÊÔÆô¶¯ÓÎÏ·£¬ÓÎÏ·¹Ø±Õºó½«×Ô¶¯ÍË³ö·şÎñ¶Ë£¡
-echo ------------------------------
+title %ys-33%
+echo %ys-34%
+echo %ys-16%
 start /high /wait %game%
 set select1=y
 cls
-echo.&set /p select1=¼ì²âµ½ÓÎÏ·ÒÑ¾­¹Ø±Õ£¬ÊÇ·ñÍË³ö·şÎñ¶Ë£¿£¨ÇëÊäÈëy/n£¬²»ÊäÈë/ÎŞĞ§ÊäÈëÔòÄ¬ÈÏÎªÊÇ¡££©
+echo. & set /p select1="%ys-35%"
 cls
-echo ------------------------------
+echo %ys-16%
 if \"%select1%\"==\"y\" (
     color 67
-    title ¹Ø±ÕÖĞ
-    echo ÕıÔÚ¹Ø±ÕÖ¸ÁîºÍ´úÀí¹¤¾ß...
-    taskkill /im Ö¸ÁîºÍ´úÀí¹¤¾ß.exe /t /f
-    echo ÕıÔÚ¹Ø±ÕÏµÍ³´úÀí...
+    title %ys-36%
+    echo %ys-37%
+    taskkill /im æŒ‡ä»¤å’Œä»£ç†å·¥å…·.exe /t /f
+    echo% ys-38%
     reg add "HKCU\Software\Microsoft\Windows\CurrentVersion\Internet Settings" /v ProxyEnable /t REG_DWORD /d 0 /f
-    echo ÕıÔÚ¹Ø±Õjava·şÎñ¶Ë...
+    echo %ys-39%
     taskkill /im java.exe /t /f
-    echo ÕıÔÚ¹Ø±ÕÊı¾İ¿â...
+    echo %ys-40%
     taskkill /im mongod.exe /t /f
 if \"%select1%\"==\"n\" (
     color 67
-    title ÍË³öÖĞ
-    echo ÒÑÈ¡ÏûÍË³ö·şÎñ¶Ë£¡
+    title %ys-41%
+    echo %ys-42%
     exit
 )
-echo È«²¿Íê³É£¡½«ÔÚ3ÃëºóÍË³ö±¾¹¤¾ß£¡
-echo ------------------------------
+echo %ys-43%
+echo %ys-16%
 timeout 3 > nul
 exit
+
 :errorgameunfind
 cls
 color 47
-title ·¢Éú´íÎó£ºÓÎÏ·Î´ÕÒµ½
+title Error Occurred: Game Not Found
 set select2=1
+echo %ys-16%
+echo An error occurred that cannot be processed automatically, JGSL cannot continue running.
+echo Error: Game Not Found
+echo Error Code: error_game_unfind(0x0001)
+echo If you seek assistance, please provide the above information to the technician.
+echo This may be due to an incorrect installation path or the game executable being renamed. The following actions may help resolve this issue:
+echo 1. Ensure that JGSL's main folder (jimgenshinserverlauncher) and the main folder of Genshin Impact (genshin impact game) are in the same directory.
+echo 2. Ensure that the main folder of Genshin Impact (genshin impact game) contains the game's executable (genshinimpact.exe).
+echo 3. You can also manually specify the location of the game's executable.
 echo ------------------------------
-echo ·¢ÉúÁËÒ»¸öÎŞ·¨×Ô¶¯´¦ÀíµÄ´íÎó£¬JGSLÎŞ·¨¼ÌĞøÔËĞĞ¡£
-echo ´íÎó£ºÓÎÏ·Î´ÕÒµ½
-echo ´íÎóÂë£ºerror_game_unfind(0x0001)
-echo ÈçÒªÑ°Çó°ïÖú£¬ÇëÏò¼¼ÊõÈËÔ±Ìá¹©ÒÔÉÏĞÅÏ¢¡£
-echo Õâ¿ÉÄÜÊÇÓÉÓÚ°²×°Â·¾¶´íÎó»òÓÎÏ·Ö÷³ÌĞò±»ÖØÃüÃûµ¼ÖÂµÄ£¬Ö´ĞĞÒÔÏÂ²Ù×÷ÓĞ¿ÉÄÜÓĞÖúÓÚĞŞ¸´´ËÎÊÌâ¡£
-echo 1.È·±£JGSLµÄÖ÷ÎÄ¼ş¼Ğ(jimgenshinserverlauncher)ÓëÔ­ÉñµÄÖ÷ÎÄ¼ş¼Ğ(genshin impact game)ÔÚÍ¬Ò»Ä¿Â¼ÏÂ¡£
-echo 2.È·±£Ô­ÉñµÄÖ÷ÎÄ¼ş¼Ğ(genshin impact game)ÖĞ°üº¬Ô­ÉñµÄÖ÷³ÌĞò(genshinimpact.exe)¡£
-echo 3.ÄúÒ²¿ÉÒÔÊÖ¶¯Ö¸¶¨Ô­ÉñÖ÷³ÌĞòµÄÎ»ÖÃ¡£
+echo.&set /p select2=You can now enter â€œeâ€ to exit JGSL or input the path to the game's executable. Please note that folders with spaces should be enclosed in double quotes, for example, â€œd:\program files\genshin impact game\genshinimpact.exeâ€.
 echo ------------------------------
-echo.&set /p select2=ÄúÏÖÔÚ¿ÉÒÔÊäÈë¡°e¡±/¡°e¡±ÍË³öJGSL£¬»òÕßÊäÈëÔ­ÉñµÄÖ÷³ÌĞòµÄÂ·¾¶£¬µ«Çë×¢Òâ£¬´ø¿Õ¸ñµÄÎÄ¼ş¼ĞÇë¼ÓÉÏÓ¢ÎÄµÄË«ÒıºÅ£¬±ÈÈç¡°d:\program files\"genshin impact game"\genshinimpact.exe¡±¡£
-echo ------------------------------
-if \"%select2%\"==\"e\" exit
-if \"%select2%\"==\"e\" exit
-echo %select2% > .\Ô­ÉñÂ·¾¶ÅäÖÃÎÄ¼ş_ÇëÎğĞŞ¸Ä»òÉ¾³ı.txt
+if "%select2%"=="e" exit
+if "%select2%"=="e" exit
+echo %select2% > .\åŸç¥è·¯å¾„é…ç½®æ–‡ä»¶_è¯·å‹¿ä¿®æ”¹æˆ–åˆ é™¤.txt
 color 67
-title ÖØÆôÖĞ
-echo ³É¹¦½«"%select2%"ÉèÎªÔ­ÉñÖ÷³ÌĞòÂ·¾¶£¬JGSL½«ÔÚ3Ãëºó×Ô¶¯ÖØÆô£¡
+title Restarting
+echo Successfully set "%select2%" as the path to the game's executable, JGSL will automatically restart in 3 seconds!
 timeout 3 >nul
 goto restart
+
+:Download
+powershell Invoke-WebRequest -Uri "https:%download_url%" -OutFile "%JGSL%/JimGenshinServerLauncher.exe"
+if %errorlevel% neq 0 (
+    echo !ys-46!
+    goto Download
+) else (
+    echo !ys-45!
+)
+pause
+rmdir /s /q "%CF%"
+start "" cmd /c "@echo off & del %JGSL% &  move "%JGSL%/JimGenshinServerLauncher.exe" "%cd%" & start %cd%/JimGenshinServerLauncher.exe"
+exit
