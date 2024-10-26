@@ -62,9 +62,10 @@ if errorlevel 1 (
     move "zh_cn.lang" "%lang_folder%"
     move "en_us.lang" "%lang_folder%"
     ) >>nul 2>&1
+    Color 08
     type nul > %config%
     (
-    echo Version=%v%
+    echo Version=1.0.0
     echo Count=0
     ) >> %config%
     echo.
@@ -253,7 +254,7 @@ if \"%select1%\"==\"y\" (
     title %ys-36%
     echo %ys-37%
     taskkill /im 指令和代理工具.exe /t /f
-    echo% ys-38%
+    echo %ys-38%
     reg add "HKCU\Software\Microsoft\Windows\CurrentVersion\Internet Settings" /v ProxyEnable /t REG_DWORD /d 0 /f
     echo %ys-39%
     taskkill /im java.exe /t /f
