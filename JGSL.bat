@@ -1,90 +1,216 @@
+::[Bat To Exe Converter]
+::
+::fBE1pAF6MU+EWHreyHcjLQlHcBODMmy2A7wgzO3o5P6IsnE6XfY3bY3n8L2DB+Ud+U3te6UoxGxfiucNGRVbdhe5UiUTmkJ+umWLMPuZvTD0WQaF50U3ew==
+::fBE1pAF6MU+EWHreyHcjLQlHcBODMmy2A7wgzO3o5P6IsnE6XfY3bY3n8L2DB+Ud+U3te6UoxGxfiucNGRVbdhe5UiUTmkJ+umWLMPuGuzDiRAaF50U3ew==
+::YAwzoRdxOk+EWAjk
+::fBw5plQjdCyDJGyX8VAjFAxVQgOOOWKGIrAP4/z0/9agq1kVQeADUobW/bGAM+ga5HbhZ4AoxFZbjcUPBB5KQjulegozu29Wik2GOPuashnoSUeHqEIzFAU=
+::YAwzuBVtJxjWCl3EqQJgSA==
+::ZR4luwNxJguZRRnk
+::Yhs/ulQjdF+5
+::cxAkpRVqdFKZSjk=
+::cBs/ulQjdF+5
+::ZR41oxFsdFKZSDk=
+::eBoioBt6dFKZSTk=
+::cRo6pxp7LAbNWATEpSI=
+::egkzugNsPRvcWATEpCI=
+::dAsiuh18IRvcCxnZtBJQ
+::cRYluBh/LU+EWAnk
+::YxY4rhs+aU+IeA==
+::cxY6rQJ7JhzQF1fEqQJhZksaHErSXA==
+::ZQ05rAF9IBncCkqN+0xwdVsFAlTMbAs=
+::ZQ05rAF9IAHYFVzEqQIaIRZzSQqRNGK0NbAO/u3pw+uSrE4VUfBf
+::eg0/rx1wNQPfEVWB+kM9LVsJDC6LMUy/CKYU4ebI6viRp18xVfcxe4feyNQ=
+::fBEirQZwNQPfEVWB+kM9LVsJDC6LMUy/CKYU4ebI6viRp18xVfcxe4feyNQ=
+::cRolqwZ3JBvQF1fEqQIaIRZzSQqRNGK0NbAO/u3pw+uSrE4VUfBf
+::dhA7uBVwLU+EWPtNxVsqaEkEHlDi
+::YQ03rBFzNR3SWATEVosBMQEUHlTQaAs=
+::dhAmsQZ3MwfNWATEVosBMQEUHlTQaAs=
+::ZQ0/vhVqMQ3MEVWAtB9witJlVR7CbjvoUtU=
+::Zg8zqx1/OA3MEVWAtB9witJlVR7CbjvoUtU=
+::dhA7pRFwIByZRRkCA4JQ
+::Zh4grVQjdCyDJGyX8VAjFAxVQgOOOWKGIrAP4/z0/9agq1kVQeADUobW/bGAM+ga5HbhZ4AoxFZbjcUPBB5KQjulegozu29WikaMOfu2ugLGT0aa7kI+KGBmkWbCoCoubtBgn9FN1ji7nA==
+::YB416Ek+Zm8=
+::
+::
+::978f952a14a936cc963da21a135fa983
 :restart
-@echo off
-setlocal enabledelayedexpansion
-cls
-color 27
-title 检测中
-echo 正在检测运行环境，请稍后...
-echo 正在检测游戏主程序...
+@echo off & setlocal enabledelayedexpansion
+cls & color 27 & chcp 65001 >nul
+
+set JGSL=%cd%\JGSL
+set config=%JGSL%\.config
+set lang_folder=%JGSL%\lang
+set Api.Github=https://api.github.com/repos/Qianyiaz/JimGenshinServerLauncher/releases/latest
+set tempfile=%JGSL%\github.json
+
+move "zh_cn.lang" "%lang_folder%"
+move "en_us.lang" "%lang_folder%"
+
+Title %ys-44%
+curl -s -o "%tempfile%" %Api.Github%
+if %errorlevel% neq 0 (
+    goto lang
+)
+
+for /f "tokens=2 delims=:, " %%B in ('type "%tempfile%" ^| findstr /i "tag_name"') do (
+    set l=%%B
+    set l=!l:"=!
+)
+
+for /f "tokens=2* delims=: " %%C in ('findstr /i "browser_download_url" "%tempfile%"') do (
+set "download_url=%%D"
+set "download_url=!download_url:"=!"
+)
+
+del %tempfile%
+
+for /f "tokens=1,2,3 delims=." %%a in ("%Version%") do (
+    set /a C_M=%%a
+    set /a C_M=%%b
+    set /a C_P=%%c
+)
+
+for /f "tokens=1,2,3 delims=." %%a in ("%l%") do (
+    set /a L_M=%%a
+    set /a L_M=%%b
+    set /a L_P=%%c
+)
+
+if !L_M! gtr !C_M! (
+    goto Download
+) else if !L_M! equ !C_M! (
+    if !L_M! gtr !C_M! (
+        goto Download
+    ) else if !L_M! equ !C_M! (
+        if !L_P! gtr !C_P! (
+            goto Download
+        )
+    )
+)
+:lang
+set "content="
+for /f "usebackq delims=" %%A in ("%config%") do ( set "content=!content!%%A")
+echo !content! | find /i "lang" > nul
+if errorlevel 1 (
+    :cl
+    cls
+    (
+    mkdir "%JGSL%"
+    mkdir "%lang_folder%"
+    move "zh_cn.lang" "%lang_folder%"
+    move "en_us.lang" "%lang_folder%"
+    ) >>nul 2>&1
+    Color 08
+    type nul > %config%
+    (
+    echo Version=1.0.0
+    echo Count=0
+    ) >> %config%
+    echo.
+    echo            Please choose your language:
+    echo                     [1] Chinese-s           
+    echo                     [2] English
+    echo.
+    set /p langn="Enter your choice: "
+    
+    if "%langn%"=="1" (
+        set "selected_lang=zh_cn"
+        echo Lang=zh_cn>> "%config%"
+    ) else if "%langn%"=="2" (
+        set "selected_lang=en_us"
+        echo Lang=en_us>> "%config%"
+    ) else (
+        echo Invalid choice. Please try again. 
+        timeout /t 2 > nul
+        goto cl
+    )
+)
+
+for /f "tokens=1,* delims==" %%a in (%config%) do ( set "%%a=%%b")
+for /f "tokens=1,* delims==" %%a in (%lang_folder%\%Lang%.lang) do ( set "%%a=%%b")
+
+title %ys-1%
+echo %ys-2%
+echo %ys-3%
 if not exist "..\genshin impact game\genshinimpact.exe" (
-    if not exist .\原神路径配置文件_请勿修改或删除.txt (
+    if not exist .\鍘熺璺緞閰嶇疆鏂囦欢_璇峰嬁淇敼鎴栧垹闄?txt (
         goto :errorgameunfind
     )
 )
-if exist .\原神路径配置文件_请勿修改或删除.txt (
-    set /p game=<.\原神路径配置文件_请勿修改或删除.txt
+if exist .\鍘熺璺緞閰嶇疆鏂囦欢_璇峰嬁淇敼鎴栧垹闄?txt (
+    set /p game=<.\鍘熺璺緞閰嶇疆鏂囦欢_璇峰嬁淇敼鎴栧垹闄?txt
     goto :cfg
 )
 set game=..\"genshin impact game"\genshinimpact.exe
+
 :cfg
-echo 通过。
-echo 系统环境：
+echo %ys-4%
+echo %ys-5%
 ver
-echo JGSL运行路径：%~dp0
-echo 显示测试：
-echo ▁▂▃▄▅▆▇█▉▊▋▌▍▎▏??▓
+echo %ys-6%~dp0
+echo %ys-7%
+echo 鈻佲杺鈻冣杽鈻呪枂鈻団枅鈻夆枈鈻嬧枌鈻嶁枎鈻??鈻?
 echo ??
 echo ABCDEFGHIJKLMNOPQRSTUVWXYZ
 echo ,./;:'"\|[{]}-_=+`~/*!@#$%^&*()
 timeout 3 > nul
 cls
-title 等待启动中
+title %ys-8%
 echo ------------------------------
-echo                                                                                   ██                
-echo                                                                                   ██                
-echo                                                                                   ██                
-echo                                                                                   ██                
-echo                                                                                   ███               
-echo                                                                                  ████               
-echo                                                                                  ████               
-echo            █                                             █                       █████              
-echo           ██                                             ██                     ██████              
-echo          ████                                           ███                    ████████             
-echo        ████████                                       ████████               ████████████           
-echo     █████████████████████████████████████████████████████████████         ██████████████████        
-echo        █████████             ████                     ███████                  ████████             
-echo         ███████            ███████                      ███   ██                 ████               
-echo         ███████  ███████     ████     ███████            █████████  ███████      ███      ████████  
-echo         ███████  █████████████████████████████  ███████████████████ ████████████████████████████████
-echo         ███████  ███████              ███████   ██████ █████████████████████     ████     ████████  
-echo         ███████  ███████              ███████   ██████ ██████       ████████    ███████   ████████  
-echo         ███████  ████████████████████ ███████   ██████ ██████ ████  ██████████████████████████████  
-echo         ███████  ███████              ███████   ██████ ████████████ ██████████████████████████████  
-echo         ███████  ███████              ███████   ██████ ██████ █████ ████████   ████████   ████████  
-echo        ████████  ████████████████████████████   ██████ ██████ █████ ████████     █████    ████████  
-echo        ███████   ██████     ███████   ███████   ██████ ██████ █████ ██████████████████████████████  
-echo        ███████   ██         ███████             ██████ ██████ ████  ██████████████████████████████  
-echo        ██████      █████    ███████   ██████    █████  ██████ ███   ███████      ████      ███████  
-echo       ██████  █████████████ ███████ █████████████████  ██████       ████        ██████        ████  
-echo      █████  ██████████████  ██████  ████████████████   ██████                ████████████           
-echo     █████   ██████          ███████         ███████    ██████              ████████████████         
-echo    ███        ████          ██████          ████       ██████                 ██████████            
-echo  █                  ████    ██████     ███             █████                   ████████             
-echo                             ████                       ████                     ██████              
-echo                             ██                         ██                       ██████              
-echo                                                                                  ████               
-echo                                                                                  ████               
-echo                                                                                  ████               
-echo                                                                                   ███               
-echo                                                                                   ██                
-echo                                                                                   ██                
-echo                                                                                   ██                
-echo                                                                                   ██                
-echo                                                                                   ██                
-echo                                                                                   ██                
-echo 你好，旅行者。
-echo 当前日期：%date%
-echo 当前时间：%time%
-echo 「欢迎来到世界。」
-echo 本一键启动工具由张智杰制作
-echo 割草机项目地址：https://github.com/grasscutters/grasscutter
-echo 割草机是开源免费软件，严禁倒买！
-echo 请按任意键启动服务端！
-echo ------------------------------
+echo                                                                                   鈻堚枅                
+echo                                                                                   鈻堚枅                
+echo                                                                                   鈻堚枅                
+echo                                                                                   鈻堚枅                
+echo                                                                                   鈻堚枅鈻?              
+echo                                                                                  鈻堚枅鈻堚枅               
+echo                                                                                  鈻堚枅鈻堚枅               
+echo            鈻?                                            鈻?                      鈻堚枅鈻堚枅鈻?             
+echo           鈻堚枅                                             鈻堚枅                     鈻堚枅鈻堚枅鈻堚枅              
+echo          鈻堚枅鈻堚枅                                           鈻堚枅鈻?                   鈻堚枅鈻堚枅鈻堚枅鈻堚枅             
+echo        鈻堚枅鈻堚枅鈻堚枅鈻堚枅                                       鈻堚枅鈻堚枅鈻堚枅鈻堚枅               鈻堚枅鈻堚枅鈻堚枅鈻堚枅鈻堚枅鈻堚枅           
+echo     鈻堚枅鈻堚枅鈻堚枅鈻堚枅鈻堚枅鈻堚枅鈻堚枅鈻堚枅鈻堚枅鈻堚枅鈻堚枅鈻堚枅鈻堚枅鈻堚枅鈻堚枅鈻堚枅鈻堚枅鈻堚枅鈻堚枅鈻堚枅鈻堚枅鈻堚枅鈻堚枅鈻堚枅鈻堚枅鈻堚枅鈻堚枅鈻堚枅鈻堚枅鈻堚枅鈻?        鈻堚枅鈻堚枅鈻堚枅鈻堚枅鈻堚枅鈻堚枅鈻堚枅鈻堚枅鈻堚枅        
+echo        鈻堚枅鈻堚枅鈻堚枅鈻堚枅鈻?            鈻堚枅鈻堚枅                     鈻堚枅鈻堚枅鈻堚枅鈻?                 鈻堚枅鈻堚枅鈻堚枅鈻堚枅             
+echo         鈻堚枅鈻堚枅鈻堚枅鈻?           鈻堚枅鈻堚枅鈻堚枅鈻?                     鈻堚枅鈻?  鈻堚枅                 鈻堚枅鈻堚枅               
+echo         鈻堚枅鈻堚枅鈻堚枅鈻? 鈻堚枅鈻堚枅鈻堚枅鈻?    鈻堚枅鈻堚枅     鈻堚枅鈻堚枅鈻堚枅鈻?           鈻堚枅鈻堚枅鈻堚枅鈻堚枅鈻? 鈻堚枅鈻堚枅鈻堚枅鈻?     鈻堚枅鈻?     鈻堚枅鈻堚枅鈻堚枅鈻堚枅  
+echo         鈻堚枅鈻堚枅鈻堚枅鈻? 鈻堚枅鈻堚枅鈻堚枅鈻堚枅鈻堚枅鈻堚枅鈻堚枅鈻堚枅鈻堚枅鈻堚枅鈻堚枅鈻堚枅鈻堚枅鈻堚枅鈻? 鈻堚枅鈻堚枅鈻堚枅鈻堚枅鈻堚枅鈻堚枅鈻堚枅鈻堚枅鈻堚枅鈻?鈻堚枅鈻堚枅鈻堚枅鈻堚枅鈻堚枅鈻堚枅鈻堚枅鈻堚枅鈻堚枅鈻堚枅鈻堚枅鈻堚枅鈻堚枅鈻堚枅鈻堚枅鈻堚枅
+echo         鈻堚枅鈻堚枅鈻堚枅鈻? 鈻堚枅鈻堚枅鈻堚枅鈻?             鈻堚枅鈻堚枅鈻堚枅鈻?  鈻堚枅鈻堚枅鈻堚枅 鈻堚枅鈻堚枅鈻堚枅鈻堚枅鈻堚枅鈻堚枅鈻堚枅鈻堚枅鈻堚枅鈻堚枅鈻?    鈻堚枅鈻堚枅     鈻堚枅鈻堚枅鈻堚枅鈻堚枅  
+echo         鈻堚枅鈻堚枅鈻堚枅鈻? 鈻堚枅鈻堚枅鈻堚枅鈻?             鈻堚枅鈻堚枅鈻堚枅鈻?  鈻堚枅鈻堚枅鈻堚枅 鈻堚枅鈻堚枅鈻堚枅       鈻堚枅鈻堚枅鈻堚枅鈻堚枅    鈻堚枅鈻堚枅鈻堚枅鈻?  鈻堚枅鈻堚枅鈻堚枅鈻堚枅  
+echo         鈻堚枅鈻堚枅鈻堚枅鈻? 鈻堚枅鈻堚枅鈻堚枅鈻堚枅鈻堚枅鈻堚枅鈻堚枅鈻堚枅鈻堚枅鈻堚枅 鈻堚枅鈻堚枅鈻堚枅鈻?  鈻堚枅鈻堚枅鈻堚枅 鈻堚枅鈻堚枅鈻堚枅 鈻堚枅鈻堚枅  鈻堚枅鈻堚枅鈻堚枅鈻堚枅鈻堚枅鈻堚枅鈻堚枅鈻堚枅鈻堚枅鈻堚枅鈻堚枅鈻堚枅鈻堚枅鈻堚枅鈻堚枅  
+echo         鈻堚枅鈻堚枅鈻堚枅鈻? 鈻堚枅鈻堚枅鈻堚枅鈻?             鈻堚枅鈻堚枅鈻堚枅鈻?  鈻堚枅鈻堚枅鈻堚枅 鈻堚枅鈻堚枅鈻堚枅鈻堚枅鈻堚枅鈻堚枅 鈻堚枅鈻堚枅鈻堚枅鈻堚枅鈻堚枅鈻堚枅鈻堚枅鈻堚枅鈻堚枅鈻堚枅鈻堚枅鈻堚枅鈻堚枅鈻堚枅鈻堚枅  
+echo         鈻堚枅鈻堚枅鈻堚枅鈻? 鈻堚枅鈻堚枅鈻堚枅鈻?             鈻堚枅鈻堚枅鈻堚枅鈻?  鈻堚枅鈻堚枅鈻堚枅 鈻堚枅鈻堚枅鈻堚枅 鈻堚枅鈻堚枅鈻?鈻堚枅鈻堚枅鈻堚枅鈻堚枅   鈻堚枅鈻堚枅鈻堚枅鈻堚枅   鈻堚枅鈻堚枅鈻堚枅鈻堚枅  
+echo        鈻堚枅鈻堚枅鈻堚枅鈻堚枅  鈻堚枅鈻堚枅鈻堚枅鈻堚枅鈻堚枅鈻堚枅鈻堚枅鈻堚枅鈻堚枅鈻堚枅鈻堚枅鈻堚枅鈻堚枅鈻堚枅   鈻堚枅鈻堚枅鈻堚枅 鈻堚枅鈻堚枅鈻堚枅 鈻堚枅鈻堚枅鈻?鈻堚枅鈻堚枅鈻堚枅鈻堚枅     鈻堚枅鈻堚枅鈻?   鈻堚枅鈻堚枅鈻堚枅鈻堚枅  
+echo        鈻堚枅鈻堚枅鈻堚枅鈻?  鈻堚枅鈻堚枅鈻堚枅     鈻堚枅鈻堚枅鈻堚枅鈻?  鈻堚枅鈻堚枅鈻堚枅鈻?  鈻堚枅鈻堚枅鈻堚枅 鈻堚枅鈻堚枅鈻堚枅 鈻堚枅鈻堚枅鈻?鈻堚枅鈻堚枅鈻堚枅鈻堚枅鈻堚枅鈻堚枅鈻堚枅鈻堚枅鈻堚枅鈻堚枅鈻堚枅鈻堚枅鈻堚枅鈻堚枅鈻堚枅  
+echo        鈻堚枅鈻堚枅鈻堚枅鈻?  鈻堚枅         鈻堚枅鈻堚枅鈻堚枅鈻?            鈻堚枅鈻堚枅鈻堚枅 鈻堚枅鈻堚枅鈻堚枅 鈻堚枅鈻堚枅  鈻堚枅鈻堚枅鈻堚枅鈻堚枅鈻堚枅鈻堚枅鈻堚枅鈻堚枅鈻堚枅鈻堚枅鈻堚枅鈻堚枅鈻堚枅鈻堚枅鈻堚枅  
+echo        鈻堚枅鈻堚枅鈻堚枅      鈻堚枅鈻堚枅鈻?   鈻堚枅鈻堚枅鈻堚枅鈻?  鈻堚枅鈻堚枅鈻堚枅    鈻堚枅鈻堚枅鈻? 鈻堚枅鈻堚枅鈻堚枅 鈻堚枅鈻?  鈻堚枅鈻堚枅鈻堚枅鈻?     鈻堚枅鈻堚枅      鈻堚枅鈻堚枅鈻堚枅鈻? 
+echo       鈻堚枅鈻堚枅鈻堚枅  鈻堚枅鈻堚枅鈻堚枅鈻堚枅鈻堚枅鈻堚枅鈻?鈻堚枅鈻堚枅鈻堚枅鈻?鈻堚枅鈻堚枅鈻堚枅鈻堚枅鈻堚枅鈻堚枅鈻堚枅鈻堚枅鈻? 鈻堚枅鈻堚枅鈻堚枅       鈻堚枅鈻堚枅        鈻堚枅鈻堚枅鈻堚枅        鈻堚枅鈻堚枅  
+echo      鈻堚枅鈻堚枅鈻? 鈻堚枅鈻堚枅鈻堚枅鈻堚枅鈻堚枅鈻堚枅鈻堚枅  鈻堚枅鈻堚枅鈻堚枅  鈻堚枅鈻堚枅鈻堚枅鈻堚枅鈻堚枅鈻堚枅鈻堚枅鈻堚枅   鈻堚枅鈻堚枅鈻堚枅                鈻堚枅鈻堚枅鈻堚枅鈻堚枅鈻堚枅鈻堚枅           
+echo     鈻堚枅鈻堚枅鈻?  鈻堚枅鈻堚枅鈻堚枅          鈻堚枅鈻堚枅鈻堚枅鈻?        鈻堚枅鈻堚枅鈻堚枅鈻?   鈻堚枅鈻堚枅鈻堚枅              鈻堚枅鈻堚枅鈻堚枅鈻堚枅鈻堚枅鈻堚枅鈻堚枅鈻堚枅         
+echo    鈻堚枅鈻?       鈻堚枅鈻堚枅          鈻堚枅鈻堚枅鈻堚枅          鈻堚枅鈻堚枅       鈻堚枅鈻堚枅鈻堚枅                 鈻堚枅鈻堚枅鈻堚枅鈻堚枅鈻堚枅            
+echo  鈻?                 鈻堚枅鈻堚枅    鈻堚枅鈻堚枅鈻堚枅     鈻堚枅鈻?            鈻堚枅鈻堚枅鈻?                  鈻堚枅鈻堚枅鈻堚枅鈻堚枅             
+echo                             鈻堚枅鈻堚枅                       鈻堚枅鈻堚枅                     鈻堚枅鈻堚枅鈻堚枅              
+echo                             鈻堚枅                         鈻堚枅                       鈻堚枅鈻堚枅鈻堚枅              
+echo                                                                                  鈻堚枅鈻堚枅               
+echo                                                                                  鈻堚枅鈻堚枅               
+echo                                                                                  鈻堚枅鈻堚枅               
+echo                                                                                   鈻堚枅鈻?              
+echo                                                                                   鈻堚枅                
+echo                                                                                   鈻堚枅                
+echo                                                                                   鈻堚枅                
+echo                                                                                   鈻堚枅                
+echo                                                                                   鈻堚枅                
+echo                                                                                   鈻堚枅                
+echo %ys-9%
+echo %ys-10%%date%
+echo %ys-11%%time%
+echo %ys-12%
+echo %ys-13%
+echo %ys-14%
+echo %ys-15%
+echo %ys-16%
 pause > nul
 cls
-title 启动中
-echo 正在检查数据库端口占用并尝试解决...
+title %ys-17%
+echo %ys-18%
 for /f "tokens=2,4,5" %%a in ('netstat -ano^|find /i ":27017 "') do (
     if not "%%c"=="" (
         set pid=%%c
@@ -93,26 +219,26 @@ for /f "tokens=2,4,5" %%a in ('netstat -ano^|find /i ":27017 "') do (
     )
 )
 for /f "tokens=1" %%a in ('tasklist /fi "pid eq %pid%"') do set prog=%%a
-echo 占用的端口号：%port%
-echo 进程pid：%pid%
-echo 进程名称：%prog%
-echo 正在自动中止进程...
+echo %ys-19%%port%
+echo %ys-20%%pid%
+echo %ys-21%%prog%
+echo %ys-22%
 taskkill /f /fi "pid eq %pid%"
-echo 已检测数据库端口占用并尝试解决。
-echo ------------------------------
-cd 数据库
-echo 正在启动数据库...
+echo %ys-23%
+echo %ys-16%
+cd 鏁版嵁搴?
+echo %ys-24%
 start /min mongod.exe --dbpath data --port 27017
-echo 已尝试启动数据库。
+echo %ys-25%
 cd ..
-cd 指令和代理工具
-echo ------------------------------
-echo 正在启动指令和代理工具...
-start 指令和代理工具.exe
-echo 已尝试启动指令和代理工具。
+cd %ys-26%
+echo %ys-16%
+echo %ys-27%
+start 鎸囦护鍜屼唬鐞嗗伐鍏?exe
+echo %ys-28%
 cd ..
-echo ------------------------------
-echo 正在检查服务端tcp端口占用并尝试解决...
+echo %ys-16%
+echo %ys-29%
 for /f "tokens=2,4,5" %%a in ('netstat -ano^|find /i ":443 "') do (
     if not "%%c"=="" (
         set pid=%%c
@@ -121,14 +247,14 @@ for /f "tokens=2,4,5" %%a in ('netstat -ano^|find /i ":443 "') do (
     )
 )
 for /f "tokens=1" %%a in ('tasklist /fi "pid eq %pid%"') do set prog=%%a
-echo 占用的端口号：%port%
-echo 进程pid：%pid%
-echo 进程名称：%prog%
-echo 正在自动中止进程...
+echo %ys-19%%port%
+echo %ys-20%%pid%
+echo %ys-21%%prog%
+echo %ys-22%
 taskkill /f /fi "pid eq %pid%"
-echo 已检测服务端tcp端口占用并尝试解决。
-echo ------------------------------
-echo 正在检查服务端udp端口占用并尝试解决...
+echo %ys-29%
+echo %ys-16%
+echo %ys-30%
 for /f "tokens=2,4,5" %%a in ('netstat -ano^|find /i ":22101 "') do (
     if not "%%c"=="" (
         set pid=%%c
@@ -137,73 +263,87 @@ for /f "tokens=2,4,5" %%a in ('netstat -ano^|find /i ":22101 "') do (
     )
 )
 for /f "tokens=1" %%a in ('tasklist /fi "pid eq %pid%"') do set prog=%%a
-echo 占用的端口号：%port%
-echo 进程pid：%pid%
-echo 进程名称：%prog%
-echo 正在自动中止进程...
+echo %ys-19%%port%
+echo %ys-20%%pid%
+echo %ys-21%%prog%
+echo %ys-22%
 taskkill /f /fi "pid eq %pid%"
-echo 已检测服务端udp端口占用并尝试解决。
-echo ------------------------------
-cd 割草机
-echo 正在启动割草机服务端...
+echo %ys-30%
+echo %ys-16%
+cd 鍓茶崏鏈?
+echo %ys-31%
 timeout 3 >nul
-start /high ..\运行环境\bin\java.exe -jar 割草机核心.jar
-echo 已尝试启动服务端。
-echo ------------------------------
+start /high ..\杩愯鐜\bin\java.exe -jar 鍓茶崏鏈烘牳蹇?jar
+echo %ys-32%
+echo %ys-16%
 cd ..
 color 17
-title 游玩中
-echo 已尝试启动游戏，游戏关闭后将自动退出服务端！
-echo ------------------------------
+title %ys-33%
+echo %ys-34%
+echo %ys-16%
 start /high /wait %game%
 set select1=y
 cls
-echo.&set /p select1=检测到游戏已经关闭，是否退出服务端？（请输入y/n，不输入/无效输入则默认为是。）
+echo. & set /p select1="%ys-35%"
 cls
-echo ------------------------------
+echo %ys-16%
 if \"%select1%\"==\"y\" (
     color 67
-    title 关闭中
-    echo 正在关闭指令和代理工具...
-    taskkill /im 指令和代理工具.exe /t /f
-    echo 正在关闭系统代理...
+    title %ys-36%
+    echo %ys-37%
+    taskkill /im 鎸囦护鍜屼唬鐞嗗伐鍏?exe /t /f
+    echo %ys-38%
     reg add "HKCU\Software\Microsoft\Windows\CurrentVersion\Internet Settings" /v ProxyEnable /t REG_DWORD /d 0 /f
-    echo 正在关闭java服务端...
+    echo %ys-39%
     taskkill /im java.exe /t /f
-    echo 正在关闭数据库...
+    echo %ys-40%
     taskkill /im mongod.exe /t /f
 if \"%select1%\"==\"n\" (
     color 67
-    title 退出中
-    echo 已取消退出服务端！
+    title %ys-41%
+    echo %ys-42%
     exit
 )
-echo 全部完成！将在3秒后退出本工具！
-echo ------------------------------
+echo %ys-43%
+echo %ys-16%
 timeout 3 > nul
 exit
+
 :errorgameunfind
 cls
 color 47
-title 发生错误：游戏未找到
+title Error Occurred: Game Not Found
 set select2=1
+echo %ys-16%
+echo An error occurred that cannot be processed automatically, JGSL cannot continue running.
+echo Error: Game Not Found
+echo Error Code: error_game_unfind(0x0001)
+echo If you seek assistance, please provide the above information to the technician.
+echo This may be due to an incorrect installation path or the game executable being renamed. The following actions may help resolve this issue:
+echo 1. Ensure that JGSL's main folder (jimgenshinserverlauncher) and the main folder of Genshin Impact (genshin impact game) are in the same directory.
+echo 2. Ensure that the main folder of Genshin Impact (genshin impact game) contains the game's executable (genshinimpact.exe).
+echo 3. You can also manually specify the location of the game's executable.
 echo ------------------------------
-echo 发生了一个无法自动处理的错误，JGSL无法继续运行。
-echo 错误：游戏未找到
-echo 错误码：error_game_unfind(0x0001)
-echo 如要寻求帮助，请向技术人员提供以上信息。
-echo 这可能是由于安装路径错误或游戏主程序被重命名导致的，执行以下操作有可能有助于修复此问题。
-echo 1.确保JGSL的主文件夹(jimgenshinserverlauncher)与原神的主文件夹(genshin impact game)在同一目录下。
-echo 2.确保原神的主文件夹(genshin impact game)中包含原神的主程序(genshinimpact.exe)。
-echo 3.您也可以手动指定原神主程序的位置。
+echo.&set /p select2=You can now enter 鈥渆鈥?to exit JGSL or input the path to the game's executable. Please note that folders with spaces should be enclosed in double quotes, for example, 鈥渄:\program files\genshin impact game\genshinimpact.exe鈥?
 echo ------------------------------
-echo.&set /p select2=您现在可以输入“e”/“e”退出JGSL，或者输入原神的主程序的路径，但请注意，带空格的文件夹请加上英文的双引号，比如“d:\program files\"genshin impact game"\genshinimpact.exe”。
-echo ------------------------------
-if \"%select2%\"==\"e\" exit
-if \"%select2%\"==\"e\" exit
-echo %select2% > .\原神路径配置文件_请勿修改或删除.txt
+if "%select2%"=="e" exit
+if "%select2%"=="e" exit
+echo %select2% > .\鍘熺璺緞閰嶇疆鏂囦欢_璇峰嬁淇敼鎴栧垹闄?txt
 color 67
-title 重启中
-echo 成功将"%select2%"设为原神主程序路径，JGSL将在3秒后自动重启！
+title Restarting
+echo Successfully set "%select2%" as the path to the game's executable, JGSL will automatically restart in 3 seconds!
 timeout 3 >nul
 goto restart
+
+:Download
+powershell Invoke-WebRequest -Uri "https:%download_url%" -OutFile "%JGSL%/JimGenshinServerLauncher.exe"
+if %errorlevel% neq 0 (
+    echo !ys-46!
+    goto Download
+) else (
+    echo !ys-45!
+)
+pause
+rmdir /s /q "%CF%"
+start "" cmd /c "@echo off & del %JGSL% &  move "%JGSL%/JimGenshinServerLauncher.exe" "%cd%" & start %cd%/JimGenshinServerLauncher.exe"
+exit
